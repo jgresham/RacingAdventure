@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class WheelScript : MonoBehaviour {
 
@@ -8,11 +9,12 @@ public class WheelScript : MonoBehaviour {
 	public float maxTorque = 50;
 	public float lowSpeedSteerAngle = 10, highSpeedSteerAngle = 1;
 	public float antiRollControl = 5000;
-	public float currentSpeed, topSpeed = 150;
+	public float kph = 0, topSpeed = 150;
+	public Texture2D speedometerDial, speedometerNeedle;
+	public Text speedDisplayText;
 
 	// Use this for initialization
 	void Start () {
-		rigidbody.centerOfMass = new Vector3 (0, -0.2f, 0);
 	}
 
 	void FixedUpdate () {
@@ -24,8 +26,9 @@ public class WheelScript : MonoBehaviour {
 
 
 		// Speed limit (km/hr)
-		currentSpeed = 2 * 3.141f * WheelLF.radius * WheelLF.rpm * (60 / 1000);
-		if(currentSpeed > topSpeed || currentSpeed < -topSpeed) {
+		kph = 2 * 3.141f * WheelLF.radius * WheelLF.rpm * (60 / 1000);
+		kph = rigidbody.velocity.magnitude * 3.6f;
+		if(kph > topSpeed || kph < -topSpeed) {
 			WheelRR.motorTorque = 0;
 			WheelLR.motorTorque = 0;
 		}
@@ -72,5 +75,15 @@ public class WheelScript : MonoBehaviour {
 		WheelLFTrans.localEulerAngles = new Vector3(0, WheelLF.steerAngle, 0);
 		WheelRFTrans.localEulerAngles = new Vector3(0, WheelRF.steerAngle, 0);
 
+	}
+
+	void OnGUI() {
+		float speedFactor = kph / topSpeed;
+		float needleRotationAngle = Mathf.Lerp (0, 180, speedFactor);
+
+		speedDisplayText.text = Mathf.Round(kph).ToString () + " Km/hr";
+		GUI.DrawTexture (new Rect (0, Screen.height-150, 300, 150), speedometerDial);
+		GUIUtility.RotateAroundPivot (needleRotationAngle, new Vector2 (150, Screen.height));
+		GUI.DrawTexture (new Rect (0, Screen.height-150, 300, 300), speedometerNeedle);
 	}
 }
