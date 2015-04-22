@@ -5,7 +5,7 @@ public class CarScript2 : MonoBehaviour {
 	
 	public float initialVelocity;
 	public float finalVelocity;
-	public float currentVelocity;
+	public static float currentVelocity;
 	public float accelerationRate;
 	public float decelerationRate;
 	public float restingDecelerationRate;
@@ -26,7 +26,7 @@ public class CarScript2 : MonoBehaviour {
 		restingDecelerationRate = 0.005f;
 
 		turningVelocity = 0.0f;
-		turningAccelerationRate = 50.0f;
+		turningAccelerationRate = 35.0f;
 	}
 	
 	// Update is called once per frame
