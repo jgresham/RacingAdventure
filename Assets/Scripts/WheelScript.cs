@@ -9,7 +9,7 @@ public class WheelScript : MonoBehaviour {
 	public float maxTorque = 50;
 	public float lowSpeedSteerAngle = 10, highSpeedSteerAngle = 1;
 	public float antiRollControl = 5000;
-	public float kph = 0, topSpeed = 150;
+	public float kph = 0, topSpeed = 149;
 	public Texture2D speedometerDial, speedometerNeedle;
 	public Text speedDisplayText;
 
@@ -26,7 +26,6 @@ public class WheelScript : MonoBehaviour {
 
 
 		// Speed limit (km/hr)
-		kph = 2 * 3.141f * WheelLF.radius * WheelLF.rpm * (60 / 1000);
 		kph = rigidbody.velocity.magnitude * 3.6f;
 		if(kph > topSpeed || kph < -topSpeed) {
 			WheelRR.motorTorque = 0;
@@ -50,17 +49,17 @@ public class WheelScript : MonoBehaviour {
 		if (groundedRR)
 			travelRR = (-WheelRR.transform.InverseTransformPoint (hit.point).y - WheelRR.radius) / WheelRR.suspensionDistance;
 
-		float antiRollFrontAxle = (travelLF = travelRF)*antiRollControl;
-		float antiRollRearAxle = (travelLR = travelRR)*antiRollControl;
+		float antiRollFrontAxle = (travelLF - travelRF)*antiRollControl;
+		float antiRollRearAxle = (travelLR - travelRR)*antiRollControl;
 
 		if (groundedLF)
 			rigidbody.AddForceAtPosition (WheelLF.transform.up * -antiRollFrontAxle, WheelLF.transform.position);
 		if (groundedLR)
 			rigidbody.AddForceAtPosition (WheelLR.transform.up * -antiRollRearAxle, WheelLR.transform.position);
 		if (groundedRF)
-			rigidbody.AddForceAtPosition (WheelRF.transform.up * -antiRollFrontAxle, WheelRF.transform.position);
+			rigidbody.AddForceAtPosition (WheelRF.transform.up * antiRollFrontAxle, WheelRF.transform.position);
 		if (groundedRR)
-			rigidbody.AddForceAtPosition (WheelRR.transform.up * -antiRollRearAxle, WheelRR.transform.position);
+			rigidbody.AddForceAtPosition (WheelRR.transform.up * antiRollRearAxle, WheelRR.transform.position);
 	}
 
 	// Update is called once per frame
