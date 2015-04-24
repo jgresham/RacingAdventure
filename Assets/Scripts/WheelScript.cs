@@ -12,17 +12,25 @@ public class WheelScript : MonoBehaviour {
 	public float kph = 0, topSpeed = 149;
 	public Texture2D speedometerDial, speedometerNeedle;
 	public Text speedDisplayText;
+	public float antiRollFrontAxle, antiRollRearAxle;
+	float lowSpeedAngle = 25, highSpeedAngle = 1;
 
 	// Use this for initialization
 	void Start () {
+		rigidbody.centerOfMass = new Vector3(0,0,0.1f);
 	}
 
 	void FixedUpdate () {
+		// Steer angle limiting
+		float speedFactor = rigidbody.velocity.magnitude / 50;
+		float currentSteerAngle = Mathf.Lerp (lowSpeedAngle, highSpeedAngle, speedFactor);
+		currentSteerAngle *= Input.GetAxis ("Horizontal");
+
 		// Wheel translation (moves Car)
 		WheelRR.motorTorque = -maxTorque * Input.GetAxis ("Vertical");
 		WheelLR.motorTorque = -maxTorque * Input.GetAxis ("Vertical");
-		WheelLF.steerAngle = 10 * Input.GetAxis ("Horizontal");
-		WheelRF.steerAngle = 10 * Input.GetAxis ("Horizontal");
+		WheelLF.steerAngle = currentSteerAngle;
+		WheelRF.steerAngle = currentSteerAngle;
 
 
 		// Speed limit (km/hr)
@@ -49,8 +57,9 @@ public class WheelScript : MonoBehaviour {
 		if (groundedRR)
 			travelRR = (-WheelRR.transform.InverseTransformPoint (hit.point).y - WheelRR.radius) / WheelRR.suspensionDistance;
 
-		float antiRollFrontAxle = (travelLF - travelRF)*antiRollControl;
-		float antiRollRearAxle = (travelLR - travelRR)*antiRollControl;
+		antiRollFrontAxle = (travelLF - travelRF)*antiRollControl;
+		antiRollRearAxle = (travelLR - travelRR)*antiRollControl;
+		Debug.Log ("LF: " + groundedLF.ToString () + ", LR: " + groundedLR.ToString () + ", RF: " + groundedRF.ToString () + ", RR: " + groundedRR.ToString ());
 
 		if (groundedLF)
 			rigidbody.AddForceAtPosition (WheelLF.transform.up * -antiRollFrontAxle, WheelLF.transform.position);
