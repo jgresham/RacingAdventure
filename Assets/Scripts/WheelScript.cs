@@ -9,7 +9,7 @@ public class WheelScript : MonoBehaviour {
 	public float maxTorque = 50;
 	public float lowSpeedSteerAngle = 10, highSpeedSteerAngle = 1;
 	public float antiRollControl = 5000;
-	public float kph = 0, topSpeed = 149;
+	public static float kph = 0, topSpeed = 149;
 	public Texture2D speedometerDial, speedometerNeedle;
 	public Text speedDisplayText;
 	public float antiRollFrontAxle, antiRollRearAxle;
