@@ -32,6 +32,17 @@ public class CarScript2 : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+		Debug.Log (currentVelocity);
+		if (currentVelocity > 0.30f) {
+			accelerationRate = 0.001f;		
+		} else if (currentVelocity > 0.50f) {
+			accelerationRate = 0.0008f;	
+		} else if (currentVelocity > 0.80f) {
+			accelerationRate = 0.0003f;	
+		} else if (currentVelocity <= 0.30f) {
+			accelerationRate = 0.005f;	
+		}
+		
 
 		//speed logic
 		if (Input.GetKey (KeyCode.X)) {
@@ -54,22 +65,7 @@ public class CarScript2 : MonoBehaviour {
 		turningVelocity = Input.GetAxis ("Horizontal") * turningAccelerationRate;
 		turningVelocity *= Time.deltaTime;
 
-		/*
-		//turning logic
-		if (Input.GetKey (KeyCode.LeftArrow)) {
-			turningVelocity -= turningAccelerationRate;
-		}
-		if (turningVelocity < -5.0f) {
-			turningVelocity = turningFinalVelocityLeft;
-		}
 
-		if (Input.GetKey (KeyCode.RightArrow)) {
-			turningVelocity += turningAccelerationRate;
-		}
-		if (turningVelocity > 5.0f) {
-			turningVelocity = turningFinalVelocityRight;
-		}
-		*/
 
 		transform.Translate (0, 0, currentVelocity);
 		transform.Rotate (0, turningVelocity, 0);
