@@ -6,17 +6,30 @@ public class WheelScript : MonoBehaviour {
 
 	public WheelCollider WheelLF, WheelLR, WheelRF, WheelRR;
 	public Transform WheelLFTrans, WheelLRTrans, WheelRFTrans, WheelRRTrans;
-	public float maxTorque = 50;
+	public float maxTorque = 20.0F;
 	public float lowSpeedSteerAngle = 10, highSpeedSteerAngle = 1;
 	public float antiRollControl = 5000;
-	public static float kph = 0, topSpeed = 79;
+	public static float kph = 0, topSpeed = 90;
 	public Texture2D speedometerDial, speedometerNeedle;
 	public Text speedDisplayText;
 	public float antiRollFrontAxle, antiRollRearAxle;
 	float lowSpeedAngle = 10, highSpeedAngle = 1;
 
+
+	//Audio
+	public AudioClip carSound;
+	private AudioSource source;
+	public float[] gearRatio;
+
+
+
+	void Awake(){
+		source = GetComponent<AudioSource> ();
+	}
+
 	// Use this for initialization
 	void Start () {
+	
 	}
 
 	void FixedUpdate () {
@@ -71,6 +84,10 @@ public class WheelScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+		EngineSound ();
+
+
 		// Wheel forward and backward rotation
 		WheelLFTrans.Rotate (WheelLF.rpm / 60 * 360 * Time.deltaTime, 0, 0);
 		WheelLRTrans.Rotate (WheelLR.rpm / 60 * 360 * Time.deltaTime, 0, 0);
@@ -93,5 +110,28 @@ public class WheelScript : MonoBehaviour {
 		GUI.DrawTexture (new Rect (0, Screen.height-150, 300, 150), speedometerDial);
 		GUIUtility.RotateAroundPivot (needleRotationAngle, new Vector2 (150, Screen.height));
 		GUI.DrawTexture (new Rect (0, Screen.height-150, 300, 300), speedometerNeedle);
+	}
+
+	void EngineSound(){
+
+		float speed = kph;
+
+		for (int i = 0; i < gearRatio.Length; i++) {
+			if(gearRatio[i]>speed){
+				break;
+			}
+			float gearMinValue = 0.0F;
+			float gearMaxValue = 0.0F;
+			if (i == 0) {
+				gearMinValue = 0;
+				gearMaxValue = gearRatio [i];
+			} else {
+				gearMinValue = gearRatio[i-1];
+				gearMaxValue = gearRatio [i];
+			}
+			float enginePitch = ((speed - gearMinValue) / (gearMaxValue - gearMinValue)) + 0.01F;
+			audio.pitch = enginePitch;
+		}
+
 	}
 }

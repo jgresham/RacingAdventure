@@ -17,10 +17,9 @@ public class SmokeScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		speed2 = speed;
-		speed = CarScript2.currentVelocity;
+		speed = WheelScript.kph;
 		dif = speed - speed2;
-		Debug.Log (speed);
-		if (speed > 0.0000001f && speed < 0.05f && dif > 0.001f) {
+		if (speed > 1.0f && speed < 15f && dif > 0.5f) {
 			ps.enableEmission = true;
 		} else {
 			ps.enableEmission = false;
