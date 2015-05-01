@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class WheelScript : MonoBehaviour {
 
@@ -14,6 +15,8 @@ public class WheelScript : MonoBehaviour {
 	public Text speedDisplayText;
 	public float antiRollFrontAxle, antiRollRearAxle;
 	float lowSpeedAngle = 10, highSpeedAngle = 1;
+	public GameObject road;
+	public float roadFrictionMultiplier = 10f, groundFrictionMultiplier = 1f, groundFrictionExtreme = 8000;
 
 
 	//Audio
@@ -29,7 +32,7 @@ public class WheelScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		rigidbody.centerOfMass = new Vector3 (0, 0, -0.02f);
 	}
 
 	void FixedUpdate () {
@@ -80,6 +83,43 @@ public class WheelScript : MonoBehaviour {
 			rigidbody.AddForceAtPosition (WheelRF.transform.up * antiRollFrontAxle, WheelRF.transform.position);
 		if (groundedRR)
 			rigidbody.AddForceAtPosition (WheelRR.transform.up * antiRollRearAxle, WheelRR.transform.position);
+
+		// Change friciton based on surface
+		if (groundedRR) {
+			if(hit.collider.gameObject.name == "road") {
+				WheelFrictionCurve curve = WheelLF.forwardFriction;
+				curve.stiffness = roadFrictionMultiplier;
+				WheelLF.forwardFriction = curve;
+				curve = WheelLR.forwardFriction;
+				curve.stiffness = roadFrictionMultiplier;
+				WheelLR.forwardFriction = curve;
+				curve = WheelRF.forwardFriction;
+				curve.stiffness = roadFrictionMultiplier;
+				WheelRF.forwardFriction = curve;
+				curve = WheelRR.forwardFriction;
+				curve.stiffness = roadFrictionMultiplier;
+				WheelRR.forwardFriction = curve;
+				Debug.Log ("road");
+			} else {
+				WheelFrictionCurve curve = WheelLF.forwardFriction;
+				curve.stiffness = groundFrictionMultiplier;
+				curve.extremumValue = groundFrictionExtreme;
+				WheelLF.forwardFriction = curve;
+				curve = WheelLR.forwardFriction;
+				curve.stiffness = groundFrictionMultiplier;
+				curve.extremumValue = groundFrictionExtreme;
+				WheelLR.forwardFriction = curve;
+				curve = WheelRF.forwardFriction;
+				curve.stiffness = groundFrictionMultiplier;
+				curve.extremumValue = groundFrictionExtreme;
+				WheelRF.forwardFriction = curve;
+				curve = WheelRR.forwardFriction;
+				curve.stiffness = groundFrictionMultiplier;
+				curve.extremumValue = groundFrictionExtreme;
+				WheelRR.forwardFriction = curve;
+				Debug.Log ("ground");
+			}
+		} 
 	}
 
 	// Update is called once per frame
@@ -134,4 +174,5 @@ public class WheelScript : MonoBehaviour {
 		}
 
 	}
+
 }
